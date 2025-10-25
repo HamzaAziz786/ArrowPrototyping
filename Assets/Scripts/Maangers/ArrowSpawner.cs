@@ -43,7 +43,7 @@ public class ArrowSpawner : MonoBehaviour
         // arrow rotation → always face toward center
         Vector3 toCenter = (Vector3.zero - spawnPos).normalized;
         float angle = Mathf.Atan2(toCenter.y, toCenter.x) * Mathf.Rad2Deg;
-        arrow.transform.rotation = Quaternion.Euler(0, 0, angle - 90);
+        arrow.transform.rotation = Quaternion.Euler(0, 0, angle - 270);
 
         arrow.GetComponent<Arrow>().Init(toCenter, currentArrowLife);
     }
