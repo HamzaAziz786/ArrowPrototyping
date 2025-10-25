@@ -2,11 +2,25 @@
 
 public class ArrowSpawner : MonoBehaviour
 {
+    [Header("Pool Reference")]
     public ObjectPool arrowPool;
+
+    [Header("Spawn Settings")]
     public float spawnInterval = 2f;
-    private float timer;
-    private float currentArrowLife = 2f;
     public float spawnDistance = 6f;
+    private float timer;
+
+    [Header("Arrow Settings")]
+    private float currentArrowLife = 4f;
+
+    [Header("Difficulty Settings")]
+    public float difficultyIncreaseInterval = 10f; // every 10 sec, increase difficulty
+    public float spawnIntervalDecrease = 0.1f;     // faster spawns
+    public float arrowLifeDecrease = 0.1f;         // shorter time to react
+    public float minSpawnInterval = 0.4f;
+    public float minArrowLife = 0.6f;
+
+    private float difficultyTimer;
 
     // 8 direction vectors (4 sides + 4 diagonals)
     private Vector2[] spawnDirs = new Vector2[]
@@ -23,11 +37,20 @@ public class ArrowSpawner : MonoBehaviour
 
     void Update()
     {
+        // Spawn arrows
         timer += Time.deltaTime;
         if (timer >= spawnInterval)
         {
             SpawnArrow();
             timer = 0f;
+        }
+
+        // Handle difficulty increase
+        difficultyTimer += Time.deltaTime;
+        if (difficultyTimer >= difficultyIncreaseInterval)
+        {
+            IncreaseDifficulty();
+            difficultyTimer = 0f;
         }
     }
 
@@ -50,7 +73,9 @@ public class ArrowSpawner : MonoBehaviour
 
     public void IncreaseDifficulty()
     {
-        spawnInterval = Mathf.Max(0.4f, spawnInterval - 0.1f);
-        currentArrowLife = Mathf.Max(0.6f, currentArrowLife - 0.1f);
+        spawnInterval = Mathf.Max(minSpawnInterval, spawnInterval - spawnIntervalDecrease);
+        currentArrowLife = Mathf.Max(minArrowLife, currentArrowLife - arrowLifeDecrease);
+
+        Debug.Log($"Difficulty increased! SpawnInterval={spawnInterval:F2}, ArrowLife={currentArrowLife:F2}");
     }
 }
