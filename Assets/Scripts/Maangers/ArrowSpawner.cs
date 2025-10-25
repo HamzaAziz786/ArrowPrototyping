@@ -1,18 +1,25 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class ArrowSpawner : MonoBehaviour
 {
     public ObjectPool arrowPool;
     public float spawnInterval = 2f;
     private float timer;
+    private float currentArrowLife = 2f;
+    public float spawnDistance = 6f;
 
+    // 8 direction vectors (4 sides + 4 diagonals)
     private Vector2[] spawnDirs = new Vector2[]
     {
-        Vector2.up, Vector2.down, Vector2.left, Vector2.right
+        Vector2.up,
+        Vector2.down,
+        Vector2.left,
+        Vector2.right,
+        new Vector2(1, 1).normalized,
+        new Vector2(-1, 1).normalized,
+        new Vector2(1, -1).normalized,
+        new Vector2(-1, -1).normalized
     };
-
-    private float currentArrowLife = 2f;
-    private float spawnDistance = 6f;
 
     void Update()
     {
@@ -26,17 +33,17 @@ public class ArrowSpawner : MonoBehaviour
 
     void SpawnArrow()
     {
-        // pick random direction (up, down, left, right)
+        // choose random direction
         Vector2 dir = spawnDirs[Random.Range(0, spawnDirs.Length)];
         Vector3 spawnPos = (Vector3)dir * spawnDistance;
 
         GameObject arrow = arrowPool.GetObject();
         arrow.transform.position = spawnPos;
 
-        // Rotate arrow toward center
+        // arrow rotation → always face toward center
         Vector3 toCenter = (Vector3.zero - spawnPos).normalized;
         float angle = Mathf.Atan2(toCenter.y, toCenter.x) * Mathf.Rad2Deg;
-        arrow.transform.rotation = Quaternion.Euler(0, 0, angle - 270);
+        arrow.transform.rotation = Quaternion.Euler(0, 0, angle - 90);
 
         arrow.GetComponent<Arrow>().Init(toCenter, currentArrowLife);
     }

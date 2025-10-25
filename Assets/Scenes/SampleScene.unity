@@ -260,6 +260,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   arrowPool: {fileID: 1734289200}
   spawnInterval: 2
+  spawnDistance: 6
 --- !u!1 &1168638528
 GameObject:
   m_ObjectHideFlags: 0
@@ -991,7 +992,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3417470721833437081, guid: a3338b1e57d17514491c2d6f10e0a5a6, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3417470721833437081, guid: a3338b1e57d17514491c2d6f10e0a5a6, type: 3}
       propertyPath: m_LocalRotation.x
@@ -1003,7 +1004,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3417470721833437081, guid: a3338b1e57d17514491c2d6f10e0a5a6, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3417470721833437081, guid: a3338b1e57d17514491c2d6f10e0a5a6, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -1015,7 +1016,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3417470721833437081, guid: a3338b1e57d17514491c2d6f10e0a5a6, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 180
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8572105692016620060, guid: a3338b1e57d17514491c2d6f10e0a5a6, type: 3}
       propertyPath: m_Name
