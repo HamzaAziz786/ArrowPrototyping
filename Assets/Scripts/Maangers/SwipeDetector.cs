@@ -107,17 +107,17 @@ public class SwipeDetector : MonoBehaviour
                 lineColor = arrow.swiped ? hitColor : missColor;
                 Debug.Log($"Swipe on {arrow.name} | {(arrow.swiped ? "✅ HIT" : "❌ MISS")}");
             }
-            else
-            {
-                Debug.Log($"❌ Object {hit.collider.name} has no Arrow script.");
-                lineColor = missColor;
-            }
+            //else
+            //{
+            //    Debug.Log($"❌ Object {hit.collider.name} has no Arrow script.");
+            //    lineColor = missColor;
+            //}
         }
-        else
-        {
-            Debug.Log("❌ No collider hit by swipe.");
-            lineColor = missColor;
-        }
+        //else
+        //{
+        //    Debug.Log("❌ No collider hit by swipe.");
+        //    lineColor = missColor;
+        //}
 
         // Draw and fade swipe line (visible in Game View)
         StartCoroutine(DrawSwipeLine(worldStart, worldEnd, lineColor));

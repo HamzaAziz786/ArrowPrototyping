@@ -6,12 +6,18 @@ public class ObjectPool : MonoBehaviour
     public GameObject prefab;
     public int initialCount = 10;
     private Queue<GameObject> pool = new Queue<GameObject>();
-
+    Sprite CurrentArrowSprite;
+    public static ObjectPool Instance;
+    private void Awake()
+    {
+        Instance = this;
+    }
     void Start()
     {
         for (int i = 0; i < initialCount; i++)
         {
             GameObject obj = Instantiate(prefab, transform);
+            
             obj.SetActive(false);
             pool.Enqueue(obj);
         }
@@ -22,11 +28,16 @@ public class ObjectPool : MonoBehaviour
         if (pool.Count == 0)
         {
             GameObject obj = Instantiate(prefab, transform);
+            obj.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = CurrentArrowSprite;
             obj.SetActive(false);
             pool.Enqueue(obj);
         }
 
         GameObject arrow = pool.Dequeue();
+        if(CurrentArrowSprite != null)
+        {
+            arrow.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = CurrentArrowSprite;
+        }
         arrow.SetActive(true);
         return arrow;
     }
@@ -35,5 +46,15 @@ public class ObjectPool : MonoBehaviour
     {
         obj.SetActive(false);
         pool.Enqueue(obj);
+    }
+    public void SpriteChange(Sprite arrowsprite)
+    {
+        CurrentArrowSprite = arrowsprite;
+        foreach (var obj in pool)
+        {
+            obj.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = arrowsprite;
+
+        }
+
     }
 }

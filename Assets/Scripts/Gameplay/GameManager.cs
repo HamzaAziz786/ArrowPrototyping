@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int PlayerLives, LivesThreshhold = 0;
 
     [SerializeField] private List<Sprite> ArrowSprites;
-    public SpriteRenderer ArrowSpriteRenderer;
+    //public SpriteRenderer ArrowSpriteRenderer;
     void Awake() => Instance = this;
     public void PauseGame()
     {
@@ -25,7 +25,7 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("Selected Arrow Sprite Index: " + index);
         Time.timeScale = 1f;
-        ArrowSpriteRenderer.sprite = ArrowSprites[index];
+        ObjectPool.Instance.SpriteChange(ArrowSprites[index]);
         SelectSpritePanel.SetActive(false);
     }
     void Start()
