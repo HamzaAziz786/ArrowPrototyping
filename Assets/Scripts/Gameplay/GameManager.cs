@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
     public TMP_Text scoreText, live, gameoverScore;
     public event Action OnGameOver;
     private int score;
-    public GameObject GameOverPanel;
+    public GameObject GameOverPanel , SelectSpritePanel;
     [SerializeField] private int PlayerLives, LivesThreshhold = 0;
 
     [SerializeField] private List<Sprite> ArrowSprites;
@@ -18,12 +18,15 @@ public class GameManager : MonoBehaviour
     void Awake() => Instance = this;
     public void PauseGame()
     {
+        SelectSpritePanel.SetActive(true);
         Time.timeScale = 0f;
     }
     public void SelectArrowSprite(int index)
     {
+        Debug.Log("Selected Arrow Sprite Index: " + index);
         Time.timeScale = 1f;
         ArrowSpriteRenderer.sprite = ArrowSprites[index];
+        SelectSpritePanel.SetActive(false);
     }
     void Start()
     {
