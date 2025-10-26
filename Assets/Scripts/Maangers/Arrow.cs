@@ -7,7 +7,7 @@ public class Arrow : MonoBehaviour
     private float moveSpeed = 3f;
     private float lifeTime;
     private float timer;
-    private bool isFading = false; // track fade
+    private bool isFading = false;
     public bool swiped = false;
 
     [Header("Fade Settings")]
@@ -15,6 +15,12 @@ public class Arrow : MonoBehaviour
     [SerializeField] private SpriteRenderer childRenderer;
 
     private Coroutine fadeRoutine;
+    private Vector3 originalScale;
+
+    private void Awake()
+    {
+        originalScale = transform.localScale;
+    }
 
     public void Init(Vector2 dir, float lifetime)
     {
@@ -34,12 +40,12 @@ public class Arrow : MonoBehaviour
             childRenderer.color = c;
         }
 
+        transform.localScale = originalScale;
         gameObject.SetActive(true);
     }
 
     void Update()
     {
-        // Stop movement if fading
         if (!isFading)
             transform.Translate(moveDir * moveSpeed * Time.deltaTime, Space.World);
 
@@ -56,7 +62,7 @@ public class Arrow : MonoBehaviour
         {
             swiped = true;
             GameManager.Instance.Miss();
-            fadeRoutine = StartCoroutine(FadeAndDisable());
+            fadeRoutine = StartCoroutine(FadeAndShrinkDisable());
         }
     }
 
@@ -76,11 +82,11 @@ public class Arrow : MonoBehaviour
         {
             swiped = true;
             GameManager.Instance.Miss();
-            fadeRoutine = StartCoroutine(FadeAndDisable());
+            fadeRoutine = StartCoroutine(FadeAndShrinkDisable());
         }
     }
 
-    private IEnumerator FadeAndDisable()
+    private IEnumerator FadeAndShrinkDisable()
     {
         if (childRenderer == null)
         {
@@ -88,25 +94,34 @@ public class Arrow : MonoBehaviour
             yield break;
         }
 
-        isFading = true; // prevent movement or multiple fades
+        isFading = true;
 
         float elapsed = 0f;
         Color startColor = childRenderer.color;
+        Vector3 startScale = transform.localScale;
 
         while (elapsed < fadeDuration)
         {
             float t = elapsed / fadeDuration;
+
+            // Fade out
             Color c = startColor;
             c.a = Mathf.Lerp(1f, 0f, t);
             childRenderer.color = c;
+
+            // Shrink
+            transform.localScale = Vector3.Lerp(startScale, Vector3.zero, t);
+
             elapsed += Time.deltaTime;
             yield return null;
         }
 
+        // Set fully transparent & scaled down
         Color final = childRenderer.color;
         final.a = 0f;
         childRenderer.color = final;
 
+        transform.localScale = Vector3.zero;
         gameObject.SetActive(false);
         isFading = false;
     }
