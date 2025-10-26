@@ -204,5 +204,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   swiped: 0
-  fadeDuration: 0.1
+  fadeDuration: 0.5
   childRenderer: {fileID: 5105763222533774079}
