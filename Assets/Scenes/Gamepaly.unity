@@ -2009,11 +2009,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &1214951218 stripped
-SpriteRenderer:
-  m_CorrespondingSourceObject: {fileID: 5105763222533774079, guid: a3338b1e57d17514491c2d6f10e0a5a6, type: 3}
-  m_PrefabInstance: {fileID: 9042639225517361159}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1237034461
 GameObject:
   m_ObjectHideFlags: 0
@@ -3371,7 +3366,6 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 649044979dfaba049b7c943414b46667, type: 3}
   - {fileID: 21300000, guid: 7fe6f3828d2e8f94c8d0c98d4d11bb8e, type: 3}
   - {fileID: 21300000, guid: 1c5f96a8907065448a58ce3fcf1d0b1a, type: 3}
-  ArrowSpriteRenderer: {fileID: 1214951218}
 --- !u!1 &1786932400
 GameObject:
   m_ObjectHideFlags: 0

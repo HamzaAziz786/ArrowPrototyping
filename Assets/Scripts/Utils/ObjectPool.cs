@@ -28,16 +28,15 @@ public class ObjectPool : MonoBehaviour
         if (pool.Count == 0)
         {
             GameObject obj = Instantiate(prefab, transform);
-            obj.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = CurrentArrowSprite;
             obj.SetActive(false);
             pool.Enqueue(obj);
+            SpriteChange(CurrentArrowSprite);
         }
 
         GameObject arrow = pool.Dequeue();
-        if(CurrentArrowSprite != null)
-        {
-            arrow.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = CurrentArrowSprite;
-        }
+        //SpriteChange(CurrentArrowSprite);
+        arrow.transform.localScale = new Vector3(1, 1, 1);
+        arrow.GetComponent<Arrow>().swiped = false;
         arrow.SetActive(true);
         return arrow;
     }
