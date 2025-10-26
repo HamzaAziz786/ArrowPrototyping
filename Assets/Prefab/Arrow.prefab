@@ -203,3 +203,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ef63ec8e6faa1c43a6a6c5e93a02248, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  swiped: 0
+  fadeDuration: 0.1
+  childRenderer: {fileID: 5105763222533774079}

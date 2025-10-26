@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 public class Arrow : MonoBehaviour
 {
@@ -6,7 +7,14 @@ public class Arrow : MonoBehaviour
     private float moveSpeed = 3f;
     private float lifeTime;
     private float timer;
+    private bool isFading = false; // track fade
     public bool swiped = false;
+
+    [Header("Fade Settings")]
+    [SerializeField] private float fadeDuration = 0.3f;
+    [SerializeField] private SpriteRenderer childRenderer;
+
+    private Coroutine fadeRoutine;
 
     public void Init(Vector2 dir, float lifetime)
     {
@@ -14,14 +22,29 @@ public class Arrow : MonoBehaviour
         lifeTime = lifetime;
         timer = 0f;
         swiped = false;
+        isFading = false;
+
+        if (fadeRoutine != null)
+            StopCoroutine(fadeRoutine);
+
+        if (childRenderer != null)
+        {
+            Color c = childRenderer.color;
+            c.a = 1f;
+            childRenderer.color = c;
+        }
+
+        gameObject.SetActive(true);
     }
 
     void Update()
     {
-        transform.Translate(moveDir * moveSpeed * Time.deltaTime, Space.World);
+        // Stop movement if fading
+        if (!isFading)
+            transform.Translate(moveDir * moveSpeed * Time.deltaTime, Space.World);
 
         timer += Time.deltaTime;
-        if (timer >= lifeTime)
+        if (timer >= lifeTime && !swiped)
         {
             Missed();
         }
@@ -29,19 +52,21 @@ public class Arrow : MonoBehaviour
 
     void Missed()
     {
-        if (!swiped)
+        if (!swiped && !isFading)
         {
+            swiped = true;
             GameManager.Instance.Miss();
+            fadeRoutine = StartCoroutine(FadeAndDisable());
         }
-        gameObject.SetActive(false);
     }
 
     public void Swipe(Vector2 swipeDir)
     {
-        if (swiped) return;
+        if (swiped || isFading) return;
 
         float angle = Vector2.Angle(swipeDir.normalized, -moveDir.normalized);
-        if (angle < 45f)
+
+        if (angle < 90)
         {
             swiped = true;
             GameManager.Instance.Hit();
@@ -49,8 +74,40 @@ public class Arrow : MonoBehaviour
         }
         else
         {
+            swiped = true;
             GameManager.Instance.Miss();
-            gameObject.SetActive(false);
+            fadeRoutine = StartCoroutine(FadeAndDisable());
         }
+    }
+
+    private IEnumerator FadeAndDisable()
+    {
+        if (childRenderer == null)
+        {
+            gameObject.SetActive(false);
+            yield break;
+        }
+
+        isFading = true; // prevent movement or multiple fades
+
+        float elapsed = 0f;
+        Color startColor = childRenderer.color;
+
+        while (elapsed < fadeDuration)
+        {
+            float t = elapsed / fadeDuration;
+            Color c = startColor;
+            c.a = Mathf.Lerp(1f, 0f, t);
+            childRenderer.color = c;
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        Color final = childRenderer.color;
+        final.a = 0f;
+        childRenderer.color = final;
+
+        gameObject.SetActive(false);
+        isFading = false;
     }
 }

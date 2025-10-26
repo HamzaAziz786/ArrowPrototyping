@@ -482,6 +482,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 409a4c9cf1828154a80d8e36638cb985, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  minSwipeDistance: 50
+  lineMaterial: {fileID: 0}
+  lineWidth: 0.05
+  lineLifetime: 0.5
+  defaultColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  hitColor: {r: 0, g: 1, b: 0, a: 1}
+  missColor: {r: 1, g: 0, b: 0, a: 1}
+  worldDepth: 10
 --- !u!1 &1734289198
 GameObject:
   m_ObjectHideFlags: 0
