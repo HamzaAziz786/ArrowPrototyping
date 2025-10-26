@@ -92,6 +92,5 @@ public class ArrowSpawner : MonoBehaviour
         spawnInterval = Mathf.Max(minSpawnInterval, spawnInterval - spawnIntervalDecrease);
         currentArrowLife = Mathf.Max(minArrowLife, currentArrowLife - arrowLifeDecrease);
 
-        Debug.Log($"Difficulty increased! SpawnInterval={spawnInterval:F2}, ArrowLife={currentArrowLife:F2}");
     }
 }

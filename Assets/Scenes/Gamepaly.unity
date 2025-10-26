@@ -3366,6 +3366,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 649044979dfaba049b7c943414b46667, type: 3}
   - {fileID: 21300000, guid: 7fe6f3828d2e8f94c8d0c98d4d11bb8e, type: 3}
   - {fileID: 21300000, guid: 1c5f96a8907065448a58ce3fcf1d0b1a, type: 3}
+  ArrowSpriteRenderer: {fileID: 1436394870}
 --- !u!1 &1786932400
 GameObject:
   m_ObjectHideFlags: 0

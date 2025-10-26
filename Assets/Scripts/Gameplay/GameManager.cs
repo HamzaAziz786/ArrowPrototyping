@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -14,7 +15,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int PlayerLives, LivesThreshhold = 0;
 
     [SerializeField] private List<Sprite> ArrowSprites;
-    //public SpriteRenderer ArrowSpriteRenderer;
+    public Image ArrowSpriteRenderer;
     void Awake() => Instance = this;
     public void PauseGame()
     {
@@ -23,9 +24,9 @@ public class GameManager : MonoBehaviour
     }
     public void SelectArrowSprite(int index)
     {
-        Debug.Log("Selected Arrow Sprite Index: " + index);
         Time.timeScale = 1f;
         ObjectPool.Instance.SpriteChange(ArrowSprites[index]);
+        ArrowSpriteRenderer.sprite = ArrowSprites[index];
         SelectSpritePanel.SetActive(false);
     }
     void Start()

@@ -3,57 +3,87 @@ using UnityEngine;
 
 public class ObjectPool : MonoBehaviour
 {
+    [Header("Pooling Settings")]
     public GameObject prefab;
     public int initialCount = 10;
+
     private Queue<GameObject> pool = new Queue<GameObject>();
-    Sprite CurrentArrowSprite;
+    private Sprite currentArrowSprite;
+
     public static ObjectPool Instance;
+
     private void Awake()
     {
         Instance = this;
     }
+
     void Start()
     {
+        // Pre-instantiate pool objects
         for (int i = 0; i < initialCount; i++)
         {
-            GameObject obj = Instantiate(prefab, transform);
-            
+            GameObject obj = CreateNewObject();
             obj.SetActive(false);
             pool.Enqueue(obj);
         }
     }
 
-    public GameObject GetObject()
+    private GameObject CreateNewObject()
     {
-        if (pool.Count == 0)
+        GameObject obj = Instantiate(prefab, transform);
+        obj.SetActive(false);
+
+        // Apply current sprite if exists
+        if (currentArrowSprite != null)
         {
-            GameObject obj = Instantiate(prefab, transform);
-            obj.SetActive(false);
-            pool.Enqueue(obj);
-            SpriteChange(CurrentArrowSprite);
+            obj.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = currentArrowSprite;
         }
 
-        GameObject arrow = pool.Dequeue();
-        //SpriteChange(CurrentArrowSprite);
-        arrow.transform.localScale = new Vector3(1, 1, 1);
+        return obj;
+    }
+
+    public GameObject GetObject()
+    {
+        GameObject arrow = null;
+
+        // Try to find an inactive object first
+        foreach (var pooledObj in pool)
+        {
+            if (!pooledObj.activeInHierarchy)
+            {
+                arrow = pooledObj;
+                break;
+            }
+        }
+
+        // If all are active, then expand pool
+        if (arrow == null)
+        {
+            arrow = CreateNewObject();
+            pool.Enqueue(arrow);
+        }
+
+        // Reactivate and reset arrow
+        arrow.transform.localScale = Vector3.one;
         arrow.GetComponent<Arrow>().swiped = false;
         arrow.SetActive(true);
+
         return arrow;
     }
 
     public void ReturnObject(GameObject obj)
     {
         obj.SetActive(false);
-        pool.Enqueue(obj);
     }
-    public void SpriteChange(Sprite arrowsprite)
+
+    public void SpriteChange(Sprite arrowSprite)
     {
-        CurrentArrowSprite = arrowsprite;
+        currentArrowSprite = arrowSprite;
+
         foreach (var obj in pool)
         {
-            obj.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = arrowsprite;
-
+            var renderer = obj.transform.GetChild(0).GetComponent<SpriteRenderer>();
+            renderer.sprite = arrowSprite;
         }
-
     }
 }

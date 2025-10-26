@@ -84,7 +84,6 @@ public class SwipeDetector : MonoBehaviour
         Vector2 swipe = endTouch - startTouch;
         if (swipe.magnitude < minSwipeDistance)
         {
-            Debug.Log("❌ Swipe too short – ignored");
             return;
         }
 
@@ -105,7 +104,6 @@ public class SwipeDetector : MonoBehaviour
             {
                 arrow.Swipe(swipe);
                 lineColor = arrow.swiped ? hitColor : missColor;
-                Debug.Log($"Swipe on {arrow.name} | {(arrow.swiped ? "✅ HIT" : "❌ MISS")}");
             }
             //else
             //{
