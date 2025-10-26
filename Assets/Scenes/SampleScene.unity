@@ -261,6 +261,11 @@ MonoBehaviour:
   arrowPool: {fileID: 1734289200}
   spawnInterval: 2
   spawnDistance: 6
+  difficultyIncreaseInterval: 6
+  spawnIntervalDecrease: 0.1
+  arrowLifeDecrease: 0.1
+  minSpawnInterval: 0.4
+  minArrowLife: 0.6
 --- !u!1 &1168638528
 GameObject:
   m_ObjectHideFlags: 0
@@ -719,7 +724,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1818916863
 RectTransform:
   m_ObjectHideFlags: 0

@@ -6,7 +6,7 @@ public class Arrow : MonoBehaviour
     private float moveSpeed = 3f;
     private float lifeTime;
     private float timer;
-    private bool swiped = false;
+    public bool swiped = false;
 
     public void Init(Vector2 dir, float lifetime)
     {
