@@ -16,8 +16,27 @@ public class SwipeDetector : MonoBehaviour
     [SerializeField] private Color missColor = Color.red;
     [SerializeField] private float worldDepth = 10f; // Distance from camera to draw line
 
+    bool isGameOver = false;
+    [SerializeField] private GameManager gameManager;
+    private void OnEnable()
+    {
+        gameManager.OnGameOver += ResetSpawner;
+    }
+
+    private void ResetSpawner()
+    {
+        isGameOver = true;
+    }
+
+    private void OnDisable()
+    {
+        gameManager.OnGameOver -= ResetSpawner;
+    }
+
+
     void Update()
     {
+        if (isGameOver) return;
         // Detect swipe either via mouse or touch
 #if UNITY_EDITOR || UNITY_STANDALONE
         HandleMouseSwipe();

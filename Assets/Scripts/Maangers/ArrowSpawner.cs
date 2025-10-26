@@ -21,7 +21,7 @@ public class ArrowSpawner : MonoBehaviour
     public float minArrowLife = 0.6f;
 
     private float difficultyTimer;
-
+    bool isGameOver = false;
     // 8 direction vectors (4 sides + 4 diagonals)
     private Vector2[] spawnDirs = new Vector2[]
     {
@@ -34,9 +34,25 @@ public class ArrowSpawner : MonoBehaviour
         new Vector2(1, -1).normalized,
         new Vector2(-1, -1).normalized
     };
+    [SerializeField] private GameManager gameManager;    
+    private void OnEnable()
+    {
+        gameManager.OnGameOver += ResetSpawner;
+    }
+
+    private void ResetSpawner()
+    {
+        isGameOver = true;
+    }
+
+    private void OnDisable()
+    {
+        gameManager.OnGameOver -= ResetSpawner;
+    }
 
     void Update()
     {
+        if(isGameOver) return;
         // Spawn arrows
         timer += Time.deltaTime;
         if (timer >= spawnInterval)
