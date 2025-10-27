@@ -15,9 +15,17 @@ public class SwipeDetector : MonoBehaviour
     [SerializeField] private Color missColor = Color.red;
     [SerializeField] private float worldDepth = 10f;
 
+    private Camera cam;
+
+    private void Awake()
+    {
+        cam = Camera.main;
+    }
+
     void Update()
     {
         if (GameManager.Instance.IsGameOver) return;
+
 #if UNITY_EDITOR || UNITY_STANDALONE
         HandleMouseSwipe();
 #else
@@ -54,27 +62,33 @@ public class SwipeDetector : MonoBehaviour
     {
         Vector2 swipe = endTouch - startTouch;
         if (swipe.magnitude < minSwipeDistance) return;
+
         swipe.Normalize();
 
-        Vector3 worldStart = Camera.main.ScreenToWorldPoint(new Vector3(startTouch.x, startTouch.y, worldDepth));
-        Vector3 worldEnd = Camera.main.ScreenToWorldPoint(new Vector3(endTouch.x, endTouch.y, worldDepth));
+        // Convert swipe points to world space
+        Vector3 worldStart = cam.ScreenToWorldPoint(new Vector3(startTouch.x, startTouch.y, worldDepth));
+        Vector3 worldEnd = cam.ScreenToWorldPoint(new Vector3(endTouch.x, endTouch.y, worldDepth));
 
-        Arrow[] arrows = FindObjectsOfType<Arrow>().Where(a => a.gameObject.activeInHierarchy).ToArray();
-        if (arrows.Length == 0) return;
+        // Find active arrows
+        Arrow[] activeArrows = FindObjectsOfType<Arrow>().Where(a => a.gameObject.activeInHierarchy).ToArray();
+        if (activeArrows.Length == 0) return;
 
-        Arrow closest = arrows.OrderBy(a => Vector2.Distance(a.transform.position, worldStart)).FirstOrDefault();
-        if (closest == null) return;
+        // Choose the arrow closest to swipe start position
+        Arrow targetArrow = activeArrows.OrderBy(a => Vector2.Distance(a.transform.position, worldStart)).FirstOrDefault();
+        if (targetArrow == null) return;
 
-        Vector2 arrowDir = closest.direction;
-        float dot = Vector2.Dot(arrowDir, -swipe);
-        bool isOpposite = dot < -0.75f;
+        Vector2 arrowDir = targetArrow.direction;
 
-        if (isOpposite)
-            closest.OnCorrectSwipe();
+        // Compare swipe direction with arrow direction (same direction match)
+        float dot = Vector2.Dot(arrowDir, swipe);
+        bool isCorrect = dot > 0.75f; // threshold for "close enough"
+
+        if (isCorrect)
+            targetArrow.OnCorrectSwipe();
         else
-            closest.OnWrongSwipe();
+            targetArrow.OnWrongSwipe();
 
-        StartCoroutine(DrawSwipeLine(worldStart, worldEnd, isOpposite ? hitColor : missColor));
+        StartCoroutine(DrawSwipeLine(worldStart, worldEnd, isCorrect ? hitColor : missColor));
     }
 
     IEnumerator DrawSwipeLine(Vector3 start, Vector3 end, Color color)

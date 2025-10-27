@@ -1,71 +1,75 @@
 ﻿using DG.Tweening;
-using System.Collections;
 using UnityEngine;
 
 public class Arrow : MonoBehaviour
 {
-    public Vector2 direction;       // The direction this arrow *represents*
-    public bool swiped = false;     // Has the player already swiped this arrow?
-    private float lifetime = 2f;
-    private float timer;
+    public Vector2 direction { get; private set; }  // now property
+    public bool swiped = false;
+    private float lifetime;
+    private bool isActive = false;
 
     private SpriteRenderer sr;
-    private bool isActive = false;
+    private Tween moveTween;
 
     void Awake()
     {
-        sr = GetComponentInChildren<SpriteRenderer>(); // In case sprite is child
+        sr = GetComponentInChildren<SpriteRenderer>();
     }
 
-    /// <summary>
-    /// Initializes the arrow with its direction and lifetime.
-    /// </summary>
     public void Activate(Vector2 dir, float life)
     {
         direction = dir.normalized;
         lifetime = life;
-        timer = 0f;
         swiped = false;
         isActive = true;
 
-        // Rotate to face direction
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0, 0, angle - 90);
 
-        // Reset visuals
         if (sr)
         {
             sr.enabled = true;
             sr.color = Color.white;
         }
 
+        transform.localScale = Vector3.one;
         gameObject.SetActive(true);
+        MoveDownward();
     }
 
-    void Update()
+    void MoveDownward()
     {
-        if (!isActive) return;
+        float targetY = Camera.main.ViewportToWorldPoint(new Vector3(0, -0.1f, 10f)).y;
 
-        timer += Time.deltaTime;
-        if (timer >= lifetime && !swiped)
-        {
-            Missed();
-        }
+        moveTween = transform.DOMoveY(targetY, lifetime)
+            .SetEase(Ease.Linear)
+            .OnComplete(() =>
+            {
+                if (!swiped)
+                {
+                    Missed();
+                }
+            });
     }
 
     private void Missed()
     {
         if (swiped) return;
         swiped = true;
-        GameManager.Instance.GameOver();
-        if (sr) sr.color = Color.red;
         FadeAndDisable(true);
     }
-
+    public void SetVisualDirection(Vector2 dir)
+    {
+        if (sr == null) return;
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0, 0, angle - 90f);
+        direction = dir.normalized;
+    }
     public void OnCorrectSwipe()
     {
         if (swiped) return;
         swiped = true;
+        if (moveTween != null) moveTween.Kill();
         GameManager.Instance.AddScore(1);
         if (sr) sr.color = Color.green;
         FadeAndDisable(false);
@@ -75,43 +79,28 @@ public class Arrow : MonoBehaviour
     {
         if (swiped) return;
         swiped = true;
-        //GameManager.Instance.GameOver();
+        if (moveTween != null) moveTween.Kill();
         if (sr) sr.color = Color.red;
+       
         FadeAndDisable(true);
     }
 
     public void FadeAndDisable(bool IsGameOver)
     {
         if (sr == null) return;
-
         isActive = false;
-
-        // Instantly kill any running tweens on this transform or sprite
         sr.DOKill();
         transform.DOKill();
 
-        // Duration of fade
-        float fadeTime = .6f;
-
-        // Reset color alpha (just in case)
-        Color startColor = sr.color;
-        startColor.a = 1f;
-        sr.color = startColor;
-
-        // Fade and scale simultaneously
-        sr.DOFade(0f, .5f)
-            .SetUpdate(true); // <-- Important: works even when Time.timeScale = 0
-
+        float fadeTime = 0.5f;
+        sr.DOFade(0f, fadeTime);
         transform.DOScale(Vector3.zero, fadeTime)
             .SetEase(Ease.InBack)
-            .SetUpdate(true)
             .OnComplete(() =>
             {
                 gameObject.SetActive(false);
-                if (IsGameOver)
-                {
+                if(IsGameOver)
                     GameManager.Instance.GameOver();
-                }
             });
     }
 }
