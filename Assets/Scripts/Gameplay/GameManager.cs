@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using TMPro;
+using System;
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
@@ -53,13 +55,22 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
+        
         IsGameOver = true;
-        GameOverPanel.gameObject.SetActive(true);
+       StartCoroutine(nameof(ShowGameOverPanel));
         OnGameOver?.Invoke();
+        Time.timeScale = 0;
+    }
+
+    IEnumerator ShowGameOverPanel()
+    {
+        yield return new WaitForSecondsRealtime(2f);
+        GameOverPanel.gameObject.SetActive(true);
     }
 
     public void RestartGame()
     {
+        Time.timeScale = 1;
         Score = 0;
         IsGameOver = false;
         UpdateUI();
