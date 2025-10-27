@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using TMPro;
-using System;
+using UnityEngine.SceneManagement;
 using System.Collections;
 
 public class GameManager : MonoBehaviour
@@ -55,27 +55,23 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
-        
         IsGameOver = true;
-       StartCoroutine(nameof(ShowGameOverPanel));
+        GameOverPanel.SetActive(true);
         OnGameOver?.Invoke();
-        Time.timeScale = 0;
     }
-
-    IEnumerator ShowGameOverPanel()
+    IEnumerable ShowGameOverPanel()
     {
-        yield return new WaitForSecondsRealtime(2f);
-        GameOverPanel.gameObject.SetActive(true);
+        yield return new WaitForSeconds(2f);
+        GameOverPanel.SetActive(true);
     }
-
     public void RestartGame()
     {
-        Time.timeScale = 1;
-        Score = 0;
-        IsGameOver = false;
-        UpdateUI();
-        GameOverPanel.gameObject.SetActive(false);
-        OnRestart?.Invoke();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        //Score = 0;
+        //IsGameOver = false;
+        //UpdateUI();
+        //GameOverPanel.gameObject.SetActive(false);
+        //OnRestart?.Invoke();
     }
 
     private void UpdateUI()

@@ -1,5 +1,6 @@
-﻿using UnityEngine;
+﻿using DG.Tweening;
 using System.Collections;
+using UnityEngine;
 
 public class Arrow : MonoBehaviour
 {
@@ -58,7 +59,7 @@ public class Arrow : MonoBehaviour
         swiped = true;
         GameManager.Instance.GameOver();
         if (sr) sr.color = Color.red;
-        StartCoroutine(FadeAndDisable());
+        FadeAndDisable(true);
     }
 
     public void OnCorrectSwipe()
@@ -67,35 +68,50 @@ public class Arrow : MonoBehaviour
         swiped = true;
         GameManager.Instance.AddScore(1);
         if (sr) sr.color = Color.green;
-        StartCoroutine(FadeAndDisable());
+        FadeAndDisable(false);
     }
 
     public void OnWrongSwipe()
     {
         if (swiped) return;
         swiped = true;
-        GameManager.Instance.GameOver();
+        //GameManager.Instance.GameOver();
         if (sr) sr.color = Color.red;
-        StartCoroutine(FadeAndDisable());
+        FadeAndDisable(true);
     }
 
-    IEnumerator FadeAndDisable()
+    public void FadeAndDisable(bool IsGameOver)
     {
+        if (sr == null) return;
+
         isActive = false;
-        float fadeTime = 0.3f;
-        float elapsed = 0f;
+
+        // Instantly kill any running tweens on this transform or sprite
+        sr.DOKill();
+        transform.DOKill();
+
+        // Duration of fade
+        float fadeTime = .6f;
+
+        // Reset color alpha (just in case)
         Color startColor = sr.color;
+        startColor.a = 1f;
+        sr.color = startColor;
 
-        while (elapsed < fadeTime)
-        {
-            float t = elapsed / fadeTime;
-            Color c = startColor;
-            c.a = Mathf.Lerp(1f, 0f, t);
-            sr.color = c;
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
+        // Fade and scale simultaneously
+        sr.DOFade(0f, .5f)
+            .SetUpdate(true); // <-- Important: works even when Time.timeScale = 0
 
-        gameObject.SetActive(false);
+        transform.DOScale(Vector3.zero, fadeTime)
+            .SetEase(Ease.InBack)
+            .SetUpdate(true)
+            .OnComplete(() =>
+            {
+                gameObject.SetActive(false);
+                if (IsGameOver)
+                {
+                    GameManager.Instance.GameOver();
+                }
+            });
     }
 }

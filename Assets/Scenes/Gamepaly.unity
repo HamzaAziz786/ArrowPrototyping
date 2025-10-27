@@ -1619,12 +1619,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   arrowPool: {fileID: 1734289200}
   spawnInterval: 2
-  difficultyIncreaseInterval: 10
+  difficultyIncreaseInterval: 5
   spawnIntervalDecrease: 0.1
   arrowLifeDecrease: 0.1
   minSpawnInterval: 0.6
   minArrowLife: 0.8
-  gameManager: {fileID: 0}
+  gameManager: {fileID: 1741763441}
 --- !u!1 &979431285
 GameObject:
   m_ObjectHideFlags: 0
@@ -1878,7 +1878,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1048428909
 RectTransform:
   m_ObjectHideFlags: 0
