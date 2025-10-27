@@ -93,7 +93,7 @@ public class ArrowSpawner : MonoBehaviour
         // initialize arrow
         Arrow arrow = currentArrow.GetComponent<Arrow>();
         currentArrow.transform.DOScale(0, 0);
-        currentArrow.transform.DOScale(1.5f, 0.2f).SetEase(Ease.OutBack);
+        currentArrow.transform.DOScale(1f, 0.2f).SetEase(Ease.OutBack);
         arrow.Activate(dir, currentArrowLife);
     }
 
