@@ -3,126 +3,99 @@ using System.Collections;
 
 public class Arrow : MonoBehaviour
 {
-    private Vector2 moveDir;
-    private float moveSpeed = 3f;
-    private float lifeTime;
+    public Vector2 direction;       // The direction this arrow *represents*
+    public bool swiped = false;     // Has the player already swiped this arrow?
+    private float lifetime = 2f;
     private float timer;
-    private bool isFading = false;
-    public bool swiped = false;
 
-    [Header("Fade Settings")]
-    [SerializeField] private float fadeDuration = 0.3f;
-    [SerializeField] private SpriteRenderer childRenderer;
+    private SpriteRenderer sr;
+    private bool isActive = false;
 
-    private Coroutine fadeRoutine;
-    private Vector3 originalScale;
-
-    private void Awake()
+    void Awake()
     {
-        originalScale = transform.localScale;
+        sr = GetComponentInChildren<SpriteRenderer>(); // In case sprite is child
     }
 
-    public void Init(Vector2 dir, float lifetime)
+    /// <summary>
+    /// Initializes the arrow with its direction and lifetime.
+    /// </summary>
+    public void Activate(Vector2 dir, float life)
     {
-        moveDir = dir;
-        lifeTime = lifetime;
+        direction = dir.normalized;
+        lifetime = life;
         timer = 0f;
         swiped = false;
-        isFading = false;
+        isActive = true;
 
-        if (fadeRoutine != null)
-            StopCoroutine(fadeRoutine);
+        // Rotate to face direction
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0, 0, angle - 90);
 
-        if (childRenderer != null)
+        // Reset visuals
+        if (sr)
         {
-            Color c = childRenderer.color;
-            c.a = 1f;
-            childRenderer.color = c;
+            sr.enabled = true;
+            sr.color = Color.white;
         }
 
-        transform.localScale = originalScale;
         gameObject.SetActive(true);
     }
 
     void Update()
     {
-        if (!isFading)
-            transform.Translate(moveDir * moveSpeed * Time.deltaTime, Space.World);
+        if (!isActive) return;
 
         timer += Time.deltaTime;
-        if (timer >= lifeTime && !swiped)
+        if (timer >= lifetime && !swiped)
         {
             Missed();
         }
     }
 
-    void Missed()
+    private void Missed()
     {
-        if (!swiped && !isFading)
-        {
-            swiped = true;
-            GameManager.Instance.Miss();
-            fadeRoutine = StartCoroutine(FadeAndShrinkDisable());
-        }
+        if (swiped) return;
+        swiped = true;
+        GameManager.Instance.GameOver();
+        if (sr) sr.color = Color.red;
+        StartCoroutine(FadeAndDisable());
     }
 
-    public void Swipe(Vector2 swipeDir)
+    public void OnCorrectSwipe()
     {
-        if (swiped || isFading) return;
-
-        float angle = Vector2.Angle(swipeDir.normalized, -moveDir.normalized);
-
-        if (angle < 90)
-        {
-            swiped = true;
-            GameManager.Instance.Hit();
-            gameObject.SetActive(false);
-        }
-        else
-        {
-            swiped = true;
-            GameManager.Instance.Miss();
-            fadeRoutine = StartCoroutine(FadeAndShrinkDisable());
-        }
+        if (swiped) return;
+        swiped = true;
+        GameManager.Instance.AddScore(1);
+        if (sr) sr.color = Color.green;
+        StartCoroutine(FadeAndDisable());
     }
 
-    private IEnumerator FadeAndShrinkDisable()
+    public void OnWrongSwipe()
     {
-        if (childRenderer == null)
-        {
-            gameObject.SetActive(false);
-            yield break;
-        }
+        if (swiped) return;
+        swiped = true;
+        GameManager.Instance.GameOver();
+        if (sr) sr.color = Color.red;
+        StartCoroutine(FadeAndDisable());
+    }
 
-        isFading = true;
-
+    IEnumerator FadeAndDisable()
+    {
+        isActive = false;
+        float fadeTime = 0.3f;
         float elapsed = 0f;
-        Color startColor = childRenderer.color;
-        Vector3 startScale = transform.localScale;
+        Color startColor = sr.color;
 
-        while (elapsed < fadeDuration)
+        while (elapsed < fadeTime)
         {
-            float t = elapsed / fadeDuration;
-
-            // Fade out
+            float t = elapsed / fadeTime;
             Color c = startColor;
             c.a = Mathf.Lerp(1f, 0f, t);
-            childRenderer.color = c;
-
-            // Shrink
-            transform.localScale = Vector3.Lerp(startScale, Vector3.zero, t);
-
+            sr.color = c;
             elapsed += Time.deltaTime;
             yield return null;
         }
 
-        // Set fully transparent & scaled down
-        Color final = childRenderer.color;
-        final.a = 0f;
-        childRenderer.color = final;
-
-        transform.localScale = Vector3.zero;
         gameObject.SetActive(false);
-        isFading = false;
     }
 }

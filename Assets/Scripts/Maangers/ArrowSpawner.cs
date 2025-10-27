@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 public class ArrowSpawner : MonoBehaviour
 {
@@ -7,23 +8,27 @@ public class ArrowSpawner : MonoBehaviour
 
     [Header("Spawn Settings")]
     public float spawnInterval = 2f;
-    public float spawnDistance = 6f;
     private float timer;
 
     [Header("Arrow Settings")]
-    private float currentArrowLife = 4f;
+    private float currentArrowLife = 2f;
 
     [Header("Difficulty Settings")]
     public float difficultyIncreaseInterval = 10f; // every 10 sec, increase difficulty
     public float spawnIntervalDecrease = 0.1f;     // faster spawns
     public float arrowLifeDecrease = 0.1f;         // shorter time to react
-    public float minSpawnInterval = 0.4f;
-    public float minArrowLife = 0.6f;
+    public float minSpawnInterval = 0.6f;
+    public float minArrowLife = 0.8f;
 
     private float difficultyTimer;
-    bool isGameOver = false;
-    // 8 direction vectors (4 sides + 4 diagonals)
-    private Vector2[] spawnDirs = new Vector2[]
+    private bool isGameOver = false;
+    private GameObject currentArrow;
+
+    [Header("References")]
+    [SerializeField] private GameManager gameManager;
+
+    // 8 possible directions
+    private Vector2[] directions = new Vector2[]
     {
         Vector2.up,
         Vector2.down,
@@ -34,26 +39,28 @@ public class ArrowSpawner : MonoBehaviour
         new Vector2(1, -1).normalized,
         new Vector2(-1, -1).normalized
     };
-    [SerializeField] private GameManager gameManager;    
+
     private void OnEnable()
     {
-        gameManager.OnGameOver += ResetSpawner;
-    }
-
-    private void ResetSpawner()
-    {
-        isGameOver = true;
+        gameManager.OnGameOver += HandleGameOver;
     }
 
     private void OnDisable()
     {
-        gameManager.OnGameOver -= ResetSpawner;
+        gameManager.OnGameOver -= HandleGameOver;
+    }
+
+    private void HandleGameOver()
+    {
+        isGameOver = true;
+        if (currentArrow != null)
+            currentArrow.SetActive(false);
     }
 
     void Update()
     {
-        if(isGameOver) return;
-        // Spawn arrows
+        if (isGameOver) return;
+
         timer += Time.deltaTime;
         if (timer >= spawnInterval)
         {
@@ -61,7 +68,6 @@ public class ArrowSpawner : MonoBehaviour
             timer = 0f;
         }
 
-        // Handle difficulty increase
         difficultyTimer += Time.deltaTime;
         if (difficultyTimer >= difficultyIncreaseInterval)
         {
@@ -72,25 +78,25 @@ public class ArrowSpawner : MonoBehaviour
 
     void SpawnArrow()
     {
-        // choose random direction
-        Vector2 dir = spawnDirs[Random.Range(0, spawnDirs.Length)];
-        Vector3 spawnPos = (Vector3)dir * spawnDistance;
+        // ensure only one arrow active at a time
+        if (currentArrow != null && currentArrow.activeInHierarchy)
+            return;
 
-        GameObject arrow = arrowPool.GetObject();
-        arrow.transform.position = spawnPos;
+        // pick random direction
+        Vector2 dir = directions[Random.Range(0, directions.Length)];
 
-        // arrow rotation → always face toward center
-        Vector3 toCenter = (Vector3.zero - spawnPos).normalized;
-        float angle = Mathf.Atan2(toCenter.y, toCenter.x) * Mathf.Rad2Deg;
-        arrow.transform.rotation = Quaternion.Euler(0, 0, angle - 270);
+        // get arrow from pool
+        currentArrow = arrowPool.GetObject();
+        currentArrow.transform.position = Vector3.zero;
 
-        arrow.GetComponent<Arrow>().Init(toCenter, currentArrowLife);
+        // initialize arrow
+        Arrow arrow = currentArrow.GetComponent<Arrow>();
+        arrow.Activate(dir, currentArrowLife);
     }
 
-    public void IncreaseDifficulty()
+    void IncreaseDifficulty()
     {
         spawnInterval = Mathf.Max(minSpawnInterval, spawnInterval - spawnIntervalDecrease);
         currentArrowLife = Mathf.Max(minArrowLife, currentArrowLife - arrowLifeDecrease);
-
     }
 }

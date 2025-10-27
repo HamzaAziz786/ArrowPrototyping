@@ -1,80 +1,74 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using UnityEngine;
 using TMPro;
-using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
-    public TMP_Text scoreText, live, gameoverScore;
-    public event Action OnGameOver;
-    private int score;
-    public GameObject GameOverPanel , SelectSpritePanel;
-    [SerializeField] private int PlayerLives, LivesThreshhold = 0;
 
-    [SerializeField] private List<Sprite> ArrowSprites;
-    public Image ArrowSpriteRenderer;
-    void Awake() => Instance = this;
-    public void PauseGame()
+    [Header("UI")]
+    [SerializeField] private TMP_Text scoreText;
+    [SerializeField] private GameObject GameOverPanel;
+
+    [Header("Game Settings")]
+    [SerializeField] private float difficultyIncreaseRate = 5f; // Every 5 seconds
+    [SerializeField] private float spawnRateMultiplier = 0.9f; // Arrows spawn faster
+
+    public bool IsGameOver { get; private set; }
+    public int Score { get; private set; }
+
+    public delegate void GameEvent();
+    public event GameEvent OnGameOver;
+    public event GameEvent OnRestart;
+
+    private float difficultyTimer;
+
+    void Awake()
     {
-        SelectSpritePanel.SetActive(true);
-        Time.timeScale = 0f;
+        Instance = this;
+        IsGameOver = false;
+        Score = 0;
+        UpdateUI();
+        GameOverPanel.gameObject.SetActive(false);
     }
-    public void SelectArrowSprite(int index)
+
+    void Update()
     {
-        Time.timeScale = 1f;
-        ObjectPool.Instance.SpriteChange(ArrowSprites[index]);
-        ArrowSpriteRenderer.sprite = ArrowSprites[index];
-        SelectSpritePanel.SetActive(false);
+        if (IsGameOver) return;
+
+        // Increase difficulty gradually
+        //difficultyTimer += Time.deltaTime;
+        //if (difficultyTimer >= difficultyIncreaseRate)
+        //{
+        //    difficultyTimer = 0f;
+        //    ArrowSpawner.Instance.IncreaseDifficulty(spawnRateMultiplier);
+        //}
     }
-    void Start()
+
+    public void AddScore(int amount)
     {
-        score = 0;
-        PlayerLives = LivesThreshhold;
+        if (IsGameOver) return;
+        Score += amount;
         UpdateUI();
     }
 
-    public void Hit()
+    public void GameOver()
     {
-        score++;
-        UpdateUI();
-    }
-
-    public void Miss()
-    {
-        PlayerLives--;
-        if (PlayerLives <= 0)
-            GameOver();
-        //score = Mathf.Max(0, score - 1);
-        UpdateUI();
-    }
-
-    private void GameOver()
-    {
+        IsGameOver = true;
+        GameOverPanel.gameObject.SetActive(true);
         OnGameOver?.Invoke();
-        Time.timeScale = 0f;
-        GameOverPanel.SetActive(true);
     }
+
     public void RestartGame()
     {
-        Time.timeScale = 1;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        Score = 0;
+        IsGameOver = false;
+        UpdateUI();
+        GameOverPanel.gameObject.SetActive(false);
+        OnRestart?.Invoke();
     }
-    void UpdateUI()
+
+    private void UpdateUI()
     {
-        if (scoreText)
-        {
-            scoreText.text = "Score: " + score;
-        }
-        if (gameoverScore)
-        {
-            gameoverScore.text = "Total Score : " + score;
-        }
-        if (live)
-        {
-            live.text = "Lives: " + PlayerLives;
-        }
+        scoreText.text = "Score: " + Score;
     }
 }
