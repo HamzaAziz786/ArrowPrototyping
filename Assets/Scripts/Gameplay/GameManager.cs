@@ -73,7 +73,10 @@ public class GameManager : MonoBehaviour
         //GameOverPanel.gameObject.SetActive(false);
         //OnRestart?.Invoke();
     }
-
+    public void Home()
+    {
+        SceneManager.LoadScene(0);
+    }
     private void UpdateUI()
     {
         scoreText.text = "Score: " + Score;
