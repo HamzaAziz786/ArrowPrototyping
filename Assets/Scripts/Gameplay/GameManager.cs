@@ -74,6 +74,10 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.SetInt("Highscore", Score);
             PlayerPrefs.Save();
         }
+        if(PlayerPrefs.GetInt("Highscore") > Score)
+        {
+            highscoreText.transform.DOScale(1.3f , 1).SetLoops(2 , LoopType.Yoyo);
+        }
         AnimateScore(PlayerPrefs.GetInt("Highscore"), .4f, highscoreText , "HighScore : ");
         AnimateScore(Score, .4f, GameOverScore , "Your Score : ");
         GameOverPanel.SetActive(true);

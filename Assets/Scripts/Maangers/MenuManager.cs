@@ -36,9 +36,9 @@ public class MenuManager : MonoBehaviour
         if (string.IsNullOrEmpty(playerName))
         {
             Debug.LogWarning("Name cannot be empty!");
-            enterCorrectName.transform.DOLocalMoveY(1612, 0);
-            enterCorrectName.transform.DOLocalMoveY(760, 0.5f).SetEase(Ease.OutBounce);
-            enterCorrectName.transform.DOLocalMoveY(1612, 0.5f).SetDelay(1);
+            enterCorrectName.transform.DOLocalMoveY(526, 0);
+            enterCorrectName.transform.DOLocalMoveY(950, 0.5f).SetEase(Ease.OutBounce);
+            enterCorrectName.transform.DOLocalMoveY(526, 0.5f).SetDelay(1);
             return;
         }
 
