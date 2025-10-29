@@ -1,14 +1,15 @@
-﻿using UnityEngine;
-using TMPro;
-using UnityEngine.SceneManagement;
+﻿using DG.Tweening;
 using System.Collections;
+using TMPro;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
     [Header("UI")]
-    [SerializeField] private TMP_Text scoreText;
+    [SerializeField] private TMP_Text scoreText, highscoreText , GameOverScore;
     [SerializeField] private GameObject GameOverPanel;
 
     [Header("Game Settings")]
@@ -23,7 +24,7 @@ public class GameManager : MonoBehaviour
     public event GameEvent OnRestart;
 
     private float difficultyTimer;
-
+    private int currentScore = 0;
     void Awake()
     {
         Instance = this;
@@ -52,10 +53,29 @@ public class GameManager : MonoBehaviour
         Score += amount;
         UpdateUI();
     }
+    public void AnimateScore(int targetScore, float duration, TMP_Text text , string AttachedText)
+    {
+        int tempScore = 0;
 
+        DOTween.To(() => tempScore, x =>
+        {
+            tempScore = x;
+            text.text = AttachedText + tempScore.ToString();
+        },
+        targetScore,
+        duration
+        ).SetEase(Ease.Linear);
+    }
     public void GameOver()
     {
         IsGameOver = true;
+        if(PlayerPrefs.GetInt("Highscore") < Score)
+        {
+            PlayerPrefs.SetInt("Highscore", Score);
+            PlayerPrefs.Save();
+        }
+        AnimateScore(PlayerPrefs.GetInt("Highscore"), .4f, highscoreText , "HighScore : ");
+        AnimateScore(Score, .4f, GameOverScore , "Your Score : ");
         GameOverPanel.SetActive(true);
         OnGameOver?.Invoke();
     }
@@ -67,11 +87,6 @@ public class GameManager : MonoBehaviour
     public void RestartGame()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        //Score = 0;
-        //IsGameOver = false;
-        //UpdateUI();
-        //GameOverPanel.gameObject.SetActive(false);
-        //OnRestart?.Invoke();
     }
     public void Home()
     {
