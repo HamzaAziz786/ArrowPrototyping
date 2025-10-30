@@ -91,7 +91,7 @@ public class ArrowSpawner : MonoBehaviour
             return;
 
         // Spawn at top, random X position
-        float randomX = Random.Range(0.1f, 0.9f);
+        float randomX = Random.Range(0.5f, 0.5f);
         Vector3 spawnPos = cam.ViewportToWorldPoint(new Vector3(randomX, 1.1f, 10f));
 
         // Random visual direction (for player challenge)

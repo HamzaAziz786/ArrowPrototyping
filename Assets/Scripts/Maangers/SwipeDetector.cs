@@ -88,7 +88,7 @@ public class SwipeDetector : MonoBehaviour
         else
             targetArrow.OnWrongSwipe();
 
-        StartCoroutine(DrawSwipeLine(worldStart, worldEnd, isCorrect ? hitColor : missColor));
+        //StartCoroutine(DrawSwipeLine(worldStart, worldEnd, isCorrect ? hitColor : missColor));
     }
 
     IEnumerator DrawSwipeLine(Vector3 start, Vector3 end, Color color)

@@ -13,7 +13,7 @@ public class MenuManager : MonoBehaviour
     public TMP_Text welcomeText;
     public GameObject enterCorrectName;
     private const string PlayerNameKey = "PlayerName";
-
+    public GameObject[] Heighlighter;
     private void Start()
     {
         // Check if player name is already saved
@@ -27,6 +27,7 @@ public class MenuManager : MonoBehaviour
         {
             namePanel.SetActive(true);
         }
+        ArrowHeiglighter();
     }
 
     public void OnConfirmName()
@@ -58,7 +59,18 @@ public class MenuManager : MonoBehaviour
     public void SelectArrow(int index)
     {
         PlayerPrefs.SetInt("SelectedArrow", index);
+        ArrowHeiglighter();
         Debug.Log($"Selected Arrow Index: {index}");
+    }
+    public void ArrowHeiglighter()
+    {
+        int selectedArrow = PlayerPrefs.GetInt("SelectedArrow", 0);
+
+        for (int i = 0; i < Heighlighter.Length; i++)
+        {
+            Heighlighter[i].SetActive(i == selectedArrow);
+        }
+
     }
     private void ShowWelcome(string name)
     {

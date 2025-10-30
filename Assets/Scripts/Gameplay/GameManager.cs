@@ -37,7 +37,14 @@ public class GameManager : MonoBehaviour
         UpdateUI();
         GameOverPanel.gameObject.SetActive(false);
     }
-
+    public void PauseGame()
+    {
+        Time.timeScale = 0f;
+    }
+    public void ResumeGame()
+    {
+        Time.timeScale = 1f;
+    }
     void Update()
     {
         if (IsGameOver) return;
