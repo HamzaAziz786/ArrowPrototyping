@@ -25,6 +25,10 @@ public class GameManager : MonoBehaviour
 
     private float difficultyTimer;
     private int currentScore = 0;
+   
+
+
+   
     void Awake()
     {
         Instance = this;
@@ -38,13 +42,6 @@ public class GameManager : MonoBehaviour
     {
         if (IsGameOver) return;
 
-        // Increase difficulty gradually
-        //difficultyTimer += Time.deltaTime;
-        //if (difficultyTimer >= difficultyIncreaseRate)
-        //{
-        //    difficultyTimer = 0f;
-        //    ArrowSpawner.Instance.IncreaseDifficulty(spawnRateMultiplier);
-        //}
     }
 
     public void AddScore(int amount)

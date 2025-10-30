@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class MenuManager : MonoBehaviour
 {
     [Header("UI References")]
-    public GameObject namePanel;
+    public GameObject namePanel,instructionspanel;
     public TMP_InputField nameInput;
     public TMP_Text welcomeText;
     public GameObject enterCorrectName;
@@ -36,9 +36,9 @@ public class MenuManager : MonoBehaviour
         if (string.IsNullOrEmpty(playerName))
         {
             Debug.LogWarning("Name cannot be empty!");
-            enterCorrectName.transform.DOLocalMoveY(526, 0);
-            enterCorrectName.transform.DOLocalMoveY(950, 0.5f).SetEase(Ease.OutBounce);
-            enterCorrectName.transform.DOLocalMoveY(526, 0.5f).SetDelay(1);
+            enterCorrectName.transform.DOLocalMoveY(2007, 0);
+            enterCorrectName.transform.DOLocalMoveY(997, 0.5f).SetEase(Ease.OutBounce);
+            enterCorrectName.transform.DOLocalMoveY(2007, 0.5f).SetDelay(1);
             return;
         }
 
@@ -48,9 +48,18 @@ public class MenuManager : MonoBehaviour
 
         // Hide panel and show welcome text
         namePanel.SetActive(false);
+        if(PlayerPrefs.GetInt("FirstTime", 0) == 0)
+        {
+            instructionspanel.SetActive(true);
+            PlayerPrefs.SetInt("FirstTime", 1);
+        }
         ShowWelcome(playerName);
     }
-
+    public void SelectArrow(int index)
+    {
+        PlayerPrefs.SetInt("SelectedArrow", index);
+        Debug.Log($"Selected Arrow Index: {index}");
+    }
     private void ShowWelcome(string name)
     {
         if (welcomeText != null)

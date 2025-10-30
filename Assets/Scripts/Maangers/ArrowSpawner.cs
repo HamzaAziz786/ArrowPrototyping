@@ -28,7 +28,8 @@ public class ArrowSpawner : MonoBehaviour
     [SerializeField] private GameManager gameManager;
 
     private Camera cam;
-
+    public Sprite[] ArrowSprites;
+  
     // 8 possible facing directions (for swipe challenge)
     private readonly Vector2[] directions = new Vector2[]
     {
@@ -110,6 +111,7 @@ public class ArrowSpawner : MonoBehaviour
 
         // Activate arrow moving downward
         Arrow arrow = currentArrow.GetComponent<Arrow>();
+        arrow.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = ArrowSprites[PlayerPrefs.GetInt("SelectedArrow")];
         arrow.Activate(Vector2.down, currentArrowLife); // Movement is always down
         arrow.SetVisualDirection(randomDir);            // Only the rotation changes visually
     }
