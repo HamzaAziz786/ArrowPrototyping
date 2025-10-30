@@ -38,7 +38,7 @@ public class MenuManager : MonoBehaviour
             Debug.LogWarning("Name cannot be empty!");
             enterCorrectName.transform.DOLocalMoveY(2007, 0);
             enterCorrectName.transform.DOLocalMoveY(997, 0.5f).SetEase(Ease.OutBounce);
-            enterCorrectName.transform.DOLocalMoveY(2007, 0.5f).SetDelay(1);
+            enterCorrectName.transform.DOLocalMoveY(2007, 0.5f).SetDelay(2);
             return;
         }
 
