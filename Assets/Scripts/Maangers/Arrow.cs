@@ -56,6 +56,7 @@ public class Arrow : MonoBehaviour
     {
         if (swiped) return;
         swiped = true;
+        SoundManager.Instance.PlaySwipeWrong();
         FadeAndDisable(true);
     }
     public void SetVisualDirection(Vector2 dir)
@@ -69,6 +70,7 @@ public class Arrow : MonoBehaviour
     {
         if (swiped) return;
         swiped = true;
+        SoundManager.Instance.PlaySwipeCorrect();
         if (moveTween != null) moveTween.Kill();
         GameManager.Instance.AddScore(1);
         if (sr) sr.color = Color.green;
@@ -79,6 +81,7 @@ public class Arrow : MonoBehaviour
     {
         if (swiped) return;
         swiped = true;
+        SoundManager.Instance.PlaySwipeWrong();
         if (moveTween != null) moveTween.Kill();
         if (sr) sr.color = Color.red;
        

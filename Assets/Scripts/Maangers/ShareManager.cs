@@ -10,6 +10,7 @@ public class ShareManager : MonoBehaviour
 
     public void ShareGame()
     {
+        SoundManager.Instance.PlayButton();
 #if UNITY_ANDROID
         string fullMessage = shareMessage + "\n" + gameLink;
 

@@ -39,11 +39,13 @@ public class GameManager : MonoBehaviour
     }
     public void PauseGame()
     {
+        SoundManager.Instance.PlayButton();
         Time.timeScale = 0f;
     }
     public void ResumeGame()
     {
         Time.timeScale = 1f;
+        SoundManager.Instance.PlayButton();
     }
     void Update()
     {
@@ -85,6 +87,7 @@ public class GameManager : MonoBehaviour
         AnimateScore(PlayerPrefs.GetInt("Highscore"), .4f, highscoreText , "HighScore : ");
         AnimateScore(Score, .4f, GameOverScore , "Your Score : ");
         GameOverPanel.SetActive(true);
+        SoundManager.Instance.PlayGameOver();
         OnGameOver?.Invoke();
     }
     IEnumerable ShowGameOverPanel()
@@ -94,14 +97,20 @@ public class GameManager : MonoBehaviour
     }
     public void RestartGame()
     {
+        SoundManager.Instance.PlayButton();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
     public void Home()
     {
+                SoundManager.Instance.PlayButton();
         SceneManager.LoadScene(0);
     }
     private void UpdateUI()
     {
         scoreText.text = "Score: " + Score;
+    }
+    public void ClickSound()
+    {
+               SoundManager.Instance.PlayButton();
     }
 }

@@ -29,13 +29,17 @@ public class MenuManager : MonoBehaviour
         }
         ArrowHeiglighter();
     }
-
+    public void PlayButtonClickSound()
+    {
+               SoundManager.Instance.PlayButton();
+    }
     public void OnConfirmName()
     {
         string playerName = nameInput.text.Trim();
 
         if (string.IsNullOrEmpty(playerName))
         {
+            SoundManager.Instance.PlaySwipeWrong();
             Debug.LogWarning("Name cannot be empty!");
             enterCorrectName.transform.DOLocalMoveY(2007, 0);
             enterCorrectName.transform.DOLocalMoveY(997, 0.5f).SetEase(Ease.OutBounce);
@@ -46,7 +50,7 @@ public class MenuManager : MonoBehaviour
         // Save name
         PlayerPrefs.SetString(PlayerNameKey, playerName);
         PlayerPrefs.Save();
-
+        SoundManager.Instance.PlayButton();
         // Hide panel and show welcome text
         namePanel.SetActive(false);
         if(PlayerPrefs.GetInt("FirstTime", 0) == 0)
@@ -59,6 +63,7 @@ public class MenuManager : MonoBehaviour
     public void SelectArrow(int index)
     {
         PlayerPrefs.SetInt("SelectedArrow", index);
+        SoundManager.Instance.PlayButton();
         ArrowHeiglighter();
         Debug.Log($"Selected Arrow Index: {index}");
     }
