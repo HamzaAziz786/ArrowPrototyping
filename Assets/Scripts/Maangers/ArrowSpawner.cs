@@ -29,8 +29,8 @@ public class ArrowSpawner : MonoBehaviour
 
     private Camera cam;
     public Sprite[] ArrowSprites;
-  
-    // 8 possible facing directions (for swipe challenge)
+
+    // 8 visual arrow directions
     private readonly Vector2[] directions = new Vector2[]
     {
         Vector2.up,
@@ -48,15 +48,8 @@ public class ArrowSpawner : MonoBehaviour
         cam = Camera.main;
     }
 
-    private void OnEnable()
-    {
-        gameManager.OnGameOver += HandleGameOver;
-    }
-
-    private void OnDisable()
-    {
-        gameManager.OnGameOver -= HandleGameOver;
-    }
+    private void OnEnable() => gameManager.OnGameOver += HandleGameOver;
+    private void OnDisable() => gameManager.OnGameOver -= HandleGameOver;
 
     private void HandleGameOver()
     {
@@ -65,17 +58,22 @@ public class ArrowSpawner : MonoBehaviour
             currentArrow.SetActive(false);
     }
 
-    void Update()
+    private void Update()
     {
         if (isGameOver) return;
 
-        timer += Time.deltaTime;
-        if (timer >= spawnInterval)
+        // If no active arrow, fallback spawn via interval
+        if (currentArrow == null || !currentArrow.activeInHierarchy)
         {
-            SpawnArrow();
-            timer = 0f;
+            timer += Time.deltaTime;
+            if (timer >= spawnInterval)
+            {
+                SpawnArrow();
+                timer = 0f;
+            }
         }
 
+        // Difficulty timer
         difficultyTimer += Time.deltaTime;
         if (difficultyTimer >= difficultyIncreaseInterval)
         {
@@ -86,37 +84,44 @@ public class ArrowSpawner : MonoBehaviour
 
     void SpawnArrow()
     {
-        // Only one arrow active at a time
-        if (currentArrow != null && currentArrow.activeInHierarchy)
-            return;
+        if (isGameOver) return;
 
-        // Spawn at top, random X position
         float randomX = Random.Range(0.5f, 0.5f);
-        Vector3 spawnPos = cam.ViewportToWorldPoint(new Vector3(randomX, 1.1f, 10f));
+        Vector3 spawnPos = cam.ViewportToWorldPoint(new Vector3(randomX, 1.15f, 10f));
 
-        // Random visual direction (for player challenge)
         Vector2 randomDir = directions[Random.Range(0, directions.Length)];
 
-        // Get arrow from pool
         currentArrow = arrowPool.GetObject();
         currentArrow.transform.position = spawnPos;
         currentArrow.transform.localScale = Vector3.zero;
 
-        // Rotate arrow to face randomDir
         float angle = Mathf.Atan2(randomDir.y, randomDir.x) * Mathf.Rad2Deg - 90f;
         currentArrow.transform.rotation = Quaternion.Euler(0, 0, angle);
 
-        // Animate scale pop-in
         currentArrow.transform.DOScale(1f, 0.25f).SetEase(Ease.OutBack);
 
-        // Activate arrow moving downward
         Arrow arrow = currentArrow.GetComponent<Arrow>();
-        arrow.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = ArrowSprites[PlayerPrefs.GetInt("SelectedArrow")];
-        arrow.Activate(Vector2.down, currentArrowLife); // Movement is always down
-        arrow.SetVisualDirection(randomDir);            // Only the rotation changes visually
+        arrow.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite =
+            ArrowSprites[PlayerPrefs.GetInt("SelectedArrow")];
+
+        // Hook immediate-spawn event
+        arrow.OnArrowEnded = OnArrowEnded;
+
+        // Arrow always moves downward
+        arrow.Activate(Vector2.down, currentArrowLife);
+        arrow.SetVisualDirection(randomDir);
     }
 
-    void IncreaseDifficulty()
+    private void OnArrowEnded()
+    {
+        if (!isGameOver)
+        {
+            // ✅ Instant spawn (NO WAIT)
+            SpawnArrow();
+        }
+    }
+
+    private void IncreaseDifficulty()
     {
         spawnInterval = Mathf.Max(minSpawnInterval, spawnInterval - spawnIntervalDecrease);
         currentArrowLife = Mathf.Max(minArrowLife, currentArrowLife - arrowLifeDecrease);

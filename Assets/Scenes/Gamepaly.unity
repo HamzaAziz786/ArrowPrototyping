@@ -5400,7 +5400,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefab: {fileID: 8572105692016620060, guid: a3338b1e57d17514491c2d6f10e0a5a6, type: 3}
-  initialCount: 10
+  initialCount: 1
 --- !u!1 &1741763439
 GameObject:
   m_ObjectHideFlags: 0
